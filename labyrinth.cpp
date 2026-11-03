@@ -33,7 +33,7 @@ glm::mat4
 	myMatrix, resizeMatrix, matrTransl, matrRot, matrScale;
 
 float angle = 0;
-float tx = 0, ty = 0;
+float positionX = 0, positionY = 0;
 float xMin = -960.f, xMax = 960.f, yMin = -540.f, yMax = 540.f;
 
 bool keystates[256];
@@ -72,16 +72,16 @@ void LoadTexture(const char* texturePath)
 
 void handleMovement() {
 	if (keystates['d']) {
-		tx += 10;
+		positionX += 10;
 	}
 	if (keystates['a']) {
-		tx -= 10;
+		positionX -= 10;
 	}
 	if (keystates['w']) {
-		ty += 10;
+		positionY += 10;
 	}
 	if (keystates['s']) {
-		ty -= 10;
+		positionY -= 10;
 	}
 
 }
@@ -202,7 +202,7 @@ void RenderFunction(void)
 	
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	matrTransl = glm::translate(glm::mat4(1.0f), glm::vec3(tx, ty, 0.0));
+	matrTransl = glm::translate(glm::mat4(1.0f), glm::vec3(positionX, positionY, 0.0));
 	matrScale = glm::scale(glm::mat4(1.0f), glm::vec3(1, 1, 0.0));
 	matrRot = glm::rotate(glm::mat4(1.0f), angle, glm::vec3(0.0, 0.0, 1.0));
 
