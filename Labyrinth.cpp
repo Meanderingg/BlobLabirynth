@@ -121,7 +121,7 @@ void LoadTexture(const char* texturePath)
 //  Shaderul de fragment / Fragment shader - afecteaza culoarea pixelilor;
 void CreateShaders(void)
 {
-	ProgramId = LoadShaders("04_04_Shader.vert", "04_04_Shader.frag");
+	ProgramId = LoadShaders("Shader.vert", "Shader.frag");
 	glUseProgram(ProgramId);
 }
 
