@@ -37,6 +37,7 @@ float xMin = -960.f, xMax = 960.f, yMin = -540.f, yMax = 540.f;
 
 bool keystates[256];
 
+int tomas_idea = 0;
 
 void NormalKeyDown(unsigned char key, int _, int __)
 {
@@ -93,18 +94,10 @@ void CreateVBO(void)
 {
 
 	GLfloat Vertices[] = {
-		-32.0f, -32.0f, 0.0f, 0.0f,		
-		32.0f, -32.0f, 0.0f, 0.0f,  	
-		32.0f,  32.0f, 0.0f, 0.0f,  	
-		-32.0f,  32.0f, 0.0f, 0.0f,  	
-
-        /*
-		-50.0f, -50.0f, 0.0f, 0.0f,		
-		50.0f, -50.0f, 0.0f, 0.0f,		
-		50.0f, 50.0f, 0.0f, 0.0f,		
-		-50.0f, 50.0f, 0.0f, 0.0f,
-        */
-
+		-32.0f, -32.0f, 0.0f, 1.0f,		
+		32.0f, -32.0f, 0.0f, 1.0f,  	
+		32.0f,  32.0f, 0.0f, 1.0f,  	
+		-32.0f,  32.0f, 0.0f, 1.0f, 
 	};
 
 	GLfloat Colors[] = {
@@ -200,12 +193,15 @@ void Initialize(void)
 
 void RenderFunction(void)
 {
-	handleMovement();
+	tomas_idea++;
+	
+	if (tomas_idea % 3 == 0)
+		handleMovement();
 	
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	matrTransl = glm::translate(glm::mat4(1.0f), glm::vec3(tx, ty, 0.0));
-	matrScale = glm::scale(glm::mat4(1.0f), glm::vec3(0.25, 0.25, 0.0));
+	matrScale = glm::scale(glm::mat4(1.0f), glm::vec3(1, 1, 0.0));
 	matrRot = glm::rotate(glm::mat4(1.0f), angle, glm::vec3(0.0, 0.0, 1.0));
 
 	myMatrix = resizeMatrix * matrScale * matrTransl * matrRot;
