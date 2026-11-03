@@ -4,6 +4,7 @@
 #include <GL/glew.h>        
 #include <GL/freeglut.h>    
 
+#include <iostream>
 #include "loadShaders.h"	
 #include "glm/glm.hpp"		
 #include "glm/gtc/matrix_transform.hpp"
@@ -32,7 +33,7 @@ glm::mat4
 	myMatrix, resizeMatrix, matrTransl, matrRot, matrScale;
 
 float angle = 0;
-float tx = 0; float ty = 0;
+float tx = 0, ty = 0;
 float xMin = -960.f, xMax = 960.f, yMin = -540.f, yMax = 540.f;
 
 bool keystates[256];
@@ -82,6 +83,7 @@ void handleMovement() {
 	if (keystates['s']) {
 		ty -= 10;
 	}
+
 }
 
 void CreateShaders(void)
