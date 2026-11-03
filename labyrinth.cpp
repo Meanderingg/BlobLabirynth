@@ -101,6 +101,8 @@ void LoadTexture(const char* texturePath)
 }
 
 void handleMovement() {
+	directionX = directionY = 0;
+	
 	if (keystates['d']) {
 		directionX = 1;
 	}
@@ -120,7 +122,7 @@ void handleMovement() {
     float newPositionX = positionX + directionX * speed;
     float newPositionY = positionY + directionY * speed;
 
-    if(! screenCollision(newPositionX, newPositionY))
+    if (!screenCollision(newPositionX, newPositionY))
     {
         positionX = newPositionX;
         positionY = newPositionY;
