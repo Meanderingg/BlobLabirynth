@@ -13,59 +13,39 @@
 
 GLuint
 	VaoId,
-	VboId,
+	VboPositions,
+	VboColors,
+	VboTexCoords,
 	EboId,
 	ColorBufferId,
 	ProgramId,
 	myMatrixLocation,
 	matrTranslLocation,
 	matrRotlLocation,
-	codColLocation,
+	matrScaleLocation,
 	texture;
 
 GLfloat
 	winWidth = 1920, winHeight = 1080;
 
 glm::mat4
-	myMatrix, resizeMatrix, matrTransl, matrRot;
+	myMatrix, resizeMatrix, matrTransl, matrRot, matrScale;
 
-int codCol;
 float angle = 0;
 float tx = 0; float ty = 0;
 float xMin = -960.f, xMax = 960.f, yMin = -540.f, yMax = 540.f;
 
+bool keystates[256];
 
-void ProcessNormalKeys(unsigned char key, int x, int y)
+
+void NormalKeyDown(unsigned char key, int _, int __)
 {
-	switch (key) {
-	case 'l':
-		angle += 0.2f;
-		break;
-	case 'r':
-		angle -= 0.2f;
-		break;
-	}
-	if (key == 27)
-		exit(0);
+	keystates[key] = true;
 }
 
-void ProcessSpecialKeys(int key, int xx, int yy) 
+void NormalKeyUp(unsigned char key, int _, int __)
 {
-	switch (key)
-	{
-	case GLUT_KEY_LEFT:
-		tx -= 10;
-		break;
-	case GLUT_KEY_RIGHT:
-		tx += 10;
-		break;
-	case GLUT_KEY_UP:
-		ty += 10;
-		break;
-	case GLUT_KEY_DOWN:
-		ty -= 10;
-		break;
-	}
+	keystates[key] = false;
 }
 
 void LoadTexture(const char* texturePath)
@@ -81,11 +61,26 @@ void LoadTexture(const char* texturePath)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	int width, height;
-	unsigned char* image = SOIL_load_image(texturePath, &width, &height, 0, SOIL_LOAD_RGB);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+	unsigned char* image = SOIL_load_image(texturePath, &width, &height, 0, SOIL_LOAD_RGBA);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
 
 	SOIL_free_image_data(image);
 	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void handleMovement() {
+	if (keystates['d']) {
+		tx += 10;
+	}
+	if (keystates['a']) {
+		tx -= 10;
+	}
+	if (keystates['w']) {
+		ty += 10;
+	}
+	if (keystates['s']) {
+		ty -= 10;
+	}
 }
 
 void CreateShaders(void)
@@ -98,11 +93,24 @@ void CreateVBO(void)
 {
 
 	GLfloat Vertices[] = {
+		-384.0f, -384.0f, 0.0f, 1.0f,		
+		384.0f, -384.0f, 0.0f, 1.0f,  	
+		384.0f,  384.0f, 0.0f, 1.0f,  	
+		-384.0f,  384.0f, 0.0f, 1.0f,  	
+	};
 
-		  -384.0f, -384.0f, 0.0f, 1.0f,	  1.0f, 0.0f, 0.0f,	0.0f, 0.0f,
-		   384.0f, -384.0f, 0.0f, 1.0f,   0.0f, 1.0f, 0.0f,	1.0f, 0.0f,
-		   384.0f,  384.0f, 0.0f, 1.0f,   1.0f, 1.0f, 0.0f,	1.0f, 1.0f,
-		  -384.0f,  384.0f, 0.0f, 1.0f,   0.0f, 1.0f, 1.0f,	0.0f, 1.0f
+	GLfloat Colors[] = {
+ 		1.0f, 0.0f, 0.0f, 1.0f,
+		0.0f, 1.0f, 0.0f, 1.0f,
+		1.0f, 1.0f, 0.0f, 1.0f,
+		0.0f, 1.0f, 1.0f, 1.0f,
+	};
+
+	GLfloat TexCoords[] = {
+		0.0f, 0.0f,
+		1.0f, 0.0f,
+		1.0f, 1.0f,
+		0.0f, 1.0f,
 	};
 
 	GLuint Indices[] = {
@@ -113,22 +121,27 @@ void CreateVBO(void)
 	glGenVertexArrays(1, &VaoId);
 	glBindVertexArray(VaoId);
 
-	glGenBuffers(1, &VboId);
-	glBindBuffer(GL_ARRAY_BUFFER, VboId);
+	glGenBuffers(1, &VboPositions);
+	glBindBuffer(GL_ARRAY_BUFFER, VboPositions);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertices), Vertices, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, 0);
+
+	glGenBuffers(1, &VboColors);
+	glBindBuffer(GL_ARRAY_BUFFER, VboColors);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Colors), Colors, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, 0);
+
+	glGenBuffers(1, &VboTexCoords);
+	glBindBuffer(GL_ARRAY_BUFFER, VboTexCoords);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(TexCoords), TexCoords, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
 	glGenBuffers(1, &EboId);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EboId);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Indices), Indices, GL_STATIC_DRAW);
-
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (GLvoid*)0);
-
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (GLvoid*)(4 * sizeof(GLfloat)));
-
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (GLvoid*)(7 * sizeof(GLfloat)));
 }
 
 void DestroyShaders(void)
@@ -144,7 +157,9 @@ void DestroyVBO(void)
 	glDisableVertexAttribArray(0);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glDeleteBuffers(1, &VboId);
+	glDeleteBuffers(1, &VboPositions);
+	glDeleteBuffers(1, &VboColors);
+	glDeleteBuffers(1, &VboTexCoords);
 	glDeleteBuffers(1, &EboId);
 
 	glBindVertexArray(0);
@@ -159,7 +174,7 @@ void Cleanup(void)
 
 void Initialize(void)
 {
-	glClearColor(0.53f, 0.81f, 0.93f, 1.0f);
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
 	CreateVBO();
 
@@ -167,20 +182,25 @@ void Initialize(void)
 
 	CreateShaders();
 
-	codColLocation = glGetUniformLocation(ProgramId, "codCol");
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
+
 	myMatrixLocation = glGetUniformLocation(ProgramId, "myMatrix");
 
 	resizeMatrix = glm::ortho(xMin, xMax, yMin, yMax);
 }
 
 void RenderFunction(void)
-{	
+{
+	handleMovement();
+	
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	matrTransl = glm::translate(glm::mat4(1.0f), glm::vec3(tx, ty, 0.0));
+	matrScale = glm::scale(glm::mat4(1.0f), glm::vec3(0.25, 0.25, 0.0));
 	matrRot = glm::rotate(glm::mat4(1.0f), angle, glm::vec3(0.0, 0.0, 1.0));
 
-	myMatrix = resizeMatrix * matrTransl * matrRot;
+	myMatrix = resizeMatrix * matrScale * matrTransl * matrRot;
 	glUniformMatrix4fv(myMatrixLocation, 1, GL_FALSE, &myMatrix[0][0]);
 
 	glActiveTexture(GL_TEXTURE0);
@@ -208,8 +228,8 @@ int main(int argc, char* argv[])
 	Initialize();
 	glutDisplayFunc(RenderFunction);
 	glutIdleFunc(RenderFunction);
-	glutKeyboardFunc(ProcessNormalKeys);
-	glutSpecialFunc(ProcessSpecialKeys);
+	glutKeyboardFunc(NormalKeyDown);
+	glutKeyboardUpFunc(NormalKeyUp);
 	glutCloseFunc(Cleanup);
 
 	glutMainLoop();
