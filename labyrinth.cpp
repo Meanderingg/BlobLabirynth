@@ -66,9 +66,18 @@ bool screenCollision(float posX, float posY)
         return false;
 } 
 
-void collisionDetection(float widthA, float widthB, float heightA, float heightB)
+bool collisionDetection(float positionXA, float positionYA, float widthA, float heightA, float positionXB, float positionYB, float widthB, float heightB)
 {
-    ;   
+    // AABB-Collision here
+	glm::vec4 bordersA = calculateBorders(positionXA, positionYA, widthA, heightA);
+	glm::vec4 bordersB = calculateBorders(positionXB, positionYB, widthB, heightB);
+
+	bool left = bordersA[0] < bordersB[1];
+	bool right = bordersA[1] > bordersB[0];
+	bool down = bordersA[2] < bordersB[3];
+	bool up = bordersA[3] > bordersB[2];
+	
+	return !left && !right && !up && !down;
 }
 void NormalKeyDown(unsigned char key, int _, int __)
 {
@@ -122,7 +131,8 @@ void handleMovement() {
     float newPositionX = positionX + directionX * speed;
     float newPositionY = positionY + directionY * speed;
 
-    if (!screenCollision(newPositionX, newPositionY))
+    if (!screenCollision(newPositionX, newPositionY) && 
+		!collisionDetection(newPositionX, newPositionY, spriteWidth - 20, spriteHeight - 20, 66, 66, spriteWidth, spriteHeight))
     {
         positionX = newPositionX;
         positionY = newPositionY;
@@ -144,10 +154,10 @@ void CreateVBO(void)
 		spriteWidth / 2, spriteHeight / 2, 0.0f, 1.0f,		
 		-spriteWidth / 2, spriteHeight / 2, 0.0f, 1.0f,
 
-		-spriteWidth / 2 + 64, -spriteHeight / 2 + 64, 0.0f, 1.0f,		
-		spriteWidth / 2 + 64, -spriteHeight / 2 + 64, 0.0f, 1.0f,		
-		spriteWidth / 2 + 64, spriteHeight / 2 + 64, 0.0f, 1.0f,		
-		-spriteWidth / 2 + 64, spriteHeight / 2 + 64, 0.0f, 1.0f,	
+		-spriteWidth / 2 + 66, -spriteHeight / 2 + 66, 0.0f, 1.0f,		
+		spriteWidth / 2 + 66, -spriteHeight / 2 + 66, 0.0f, 1.0f,		
+		spriteWidth / 2 + 66, spriteHeight / 2 + 66, 0.0f, 1.0f,		
+		-spriteWidth / 2 + 66, spriteHeight / 2 + 66, 0.0f, 1.0f,	
 
 	};
 
@@ -168,10 +178,10 @@ void CreateVBO(void)
 		1.0f, 1.0f,
 		0.0f, 1.0f,
 
-		    0.0f, 0.0f,
-    1.0f, 0.0f,
-    1.0f, 1.0f,
-    0.0f, 1.0f,
+		0.0f, 0.0f,
+		1.0f, 0.0f,
+		1.0f, 1.0f,
+		0.0f, 1.0f,
 	};
 
 	GLuint Indices[] = {
