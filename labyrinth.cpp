@@ -66,9 +66,18 @@ bool screenCollision(float posX, float posY)
         return false;
 } 
 
-void collisionDetection(float widthA, float widthB, float heightA, float heightB)
+bool collisionDetection(float positionXA, float positionYA, float widthA, float heightA, float positionXB, float positionYB, float widthB, float heightB)
 {
-    ;   
+    // AABB-Collision here
+	glm::vec4 bordersA = calculateBorders(positionXA, positionYA, widthA, heightA);
+	glm::vec4 bordersB = calculateBorders(positionXB, positionYB, widthB, heightB);
+
+	bool left = bordersA[0] < bordersB[1];
+	bool right = bordersA[1] > bordersB[0];
+	bool down = bordersA[2] < bordersB[3];
+	bool up = bordersA[3] > bordersB[2];
+	
+	return !left && !right && !up && !down;
 }
 void NormalKeyDown(unsigned char key, int _, int __)
 {
@@ -122,7 +131,8 @@ void handleMovement() {
     float newPositionX = positionX + directionX * speed;
     float newPositionY = positionY + directionY * speed;
 
-    if (!screenCollision(newPositionX, newPositionY))
+    if (!screenCollision(newPositionX, newPositionY) && 
+		!collisionDetection(newPositionX, newPositionY, spriteWidth - 20, spriteHeight - 20, 66, 66, spriteWidth, spriteHeight))
     {
         positionX = newPositionX;
         positionY = newPositionY;
@@ -142,11 +152,21 @@ void CreateVBO(void)
 		-spriteWidth / 2, -spriteHeight / 2, 0.0f, 1.0f,		
 		spriteWidth / 2, -spriteHeight / 2, 0.0f, 1.0f,		
 		spriteWidth / 2, spriteHeight / 2, 0.0f, 1.0f,		
-		-spriteWidth / 2, spriteHeight / 2, 0.0f, 1.0f,		
+		-spriteWidth / 2, spriteHeight / 2, 0.0f, 1.0f,
+
+		-spriteWidth / 2 + 66, -spriteHeight / 2 + 66, 0.0f, 1.0f,		
+		spriteWidth / 2 + 66, -spriteHeight / 2 + 66, 0.0f, 1.0f,		
+		spriteWidth / 2 + 66, spriteHeight / 2 + 66, 0.0f, 1.0f,		
+		-spriteWidth / 2 + 66, spriteHeight / 2 + 66, 0.0f, 1.0f,	
+
 	};
 
 	GLfloat Colors[] = {
  		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		1.0f, 1.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 1.0f, 0.0f,
+		 		1.0f, 0.0f, 0.0f, 0.0f,
 		0.0f, 1.0f, 0.0f, 0.0f,
 		1.0f, 1.0f, 0.0f, 0.0f,
 		0.0f, 1.0f, 1.0f, 0.0f,
@@ -157,11 +177,19 @@ void CreateVBO(void)
 		1.0f, 0.0f,
 		1.0f, 1.0f,
 		0.0f, 1.0f,
+
+		0.0f, 0.0f,
+		1.0f, 0.0f,
+		1.0f, 1.0f,
+		0.0f, 1.0f,
 	};
 
 	GLuint Indices[] = {
 	  0, 1, 2,
-	  0, 2, 3
+	  0, 2, 3,
+
+	  4, 5, 6,
+	  4, 6, 7
 	};
 
 	glGenVertexArrays(1, &VaoId);
@@ -246,7 +274,8 @@ void RenderFunction(void)
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	matrTransl = glm::translate(glm::mat4(1.0f), glm::vec3(positionX, positionY, 0.0));
-	matrScale = glm::scale(glm::mat4(1.0f), glm::vec3(1, 1, 0.0));
+	// Am scalat cu 0.9 ca sa: incapa intr-o celula de 60 x 60
+	matrScale = glm::scale(glm::mat4(1.0f), glm::vec3(0.9, 0.9, 0.0));
 	matrRot = glm::rotate(glm::mat4(1.0f), angle, glm::vec3(0.0, 0.0, 1.0));
 
 	myMatrix = resizeMatrix * matrScale * matrTransl * matrRot;
@@ -258,6 +287,11 @@ void RenderFunction(void)
 	glUniform1i(glGetUniformLocation(ProgramId, "myTexture"), 0);
 
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+	myMatrix = resizeMatrix;
+	glUniformMatrix4fv(myMatrixLocation, 1, GL_FALSE, &myMatrix[0][0]);
+
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)(6 * sizeof(GLuint)));
 
 	glutSwapBuffers();
 	glFlush();
