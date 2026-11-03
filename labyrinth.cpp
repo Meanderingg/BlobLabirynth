@@ -1,33 +1,15 @@
-﻿//
-// ================================================
-// | Grafica pe calculator                        |
-// ================================================
-// | Laboratorul IV - 04_04_Texturare.cpp |
-// ========================================
-// 
-//	Program ce deseneaza un patrat, caruia i se aplica o textura;
-//	ELEMENTE DE NOUTATE:
-//	- utilizarea texturilor;
-//	- folosirea unor functii de amestecare in shaderul de fragment;
-//	 
-//
-// 
-//	Biblioteci
-
-//#include <windows.h>        //	Utilizarea functiilor de sistem Windows (crearea de ferestre, manipularea fisierelor si directoarelor);
-#include <stdlib.h>         //  Biblioteci necesare pentru citirea shaderelor;
+﻿//#include <windows.h>        
+#include <stdlib.h>         
 #include <stdio.h>
-#include <GL/glew.h>        //  Definește prototipurile functiilor OpenGL si constantele necesare pentru programarea OpenGL moderna; 
-#include <GL/freeglut.h>    //	Include functii pentru: 
-							//	- gestionarea ferestrelor si evenimentelor de tastatura si mouse, 
-							//  - desenarea de primitive grafice precum dreptunghiuri, cercuri sau linii, 
-							//  - crearea de meniuri si submeniuri;
-#include "loadShaders.h"	//	Fisierul care face legatura intre program si shadere;
-#include "glm/glm.hpp"		//	Bibloteci utilizate pentru transformari grafice;
+#include <GL/glew.h>        
+#include <GL/freeglut.h>    
+
+#include "loadShaders.h"	
+#include "glm/glm.hpp"		
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtx/transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
-#include "SOIL.h"			//	Biblioteca pentru texturare;
+#include "SOIL.h"	
 
 
 //  Identificatorii obiectelor de tip OpenGL;
@@ -45,7 +27,7 @@ GLuint
 
 //	Dimensiunile ferestrei de afisare;
 GLfloat
-	winWidth = 800, winHeight = 600;
+	winWidth = 1920, winHeight = 1080;
 
 //	Variabile catre matricile de transformare;
 glm::mat4
@@ -54,7 +36,7 @@ glm::mat4
 int codCol;							//	Variabila ce determina schimbarea culorii pixelilor in shader;
 float angle = 0;					//	Unghiul de rotire al patratului;
 float tx = 0; float ty = 0;			//	Coordonatele de translatie ale patratului pe Ox si Oy;
-float xMin = -400.f, xMax = 400.f, yMin = -300.f, yMax = 300.f;		//	Variabile pentru proiectia ortogonala;
+float xMin = -960.f, xMax = 960.f, yMin = -540.f, yMax = 540.f;		//	Variabile pentru proiectia ortogonala;
 
 
 void ProcessNormalKeys(unsigned char key, int x, int y)
@@ -121,7 +103,7 @@ void LoadTexture(const char* texturePath)
 //  Shaderul de fragment / Fragment shader - afecteaza culoarea pixelilor;
 void CreateShaders(void)
 {
-	ProgramId = LoadShaders("Shader.vert", "Shader.frag");
+	ProgramId = LoadShaders("shader.vert", "shader.frag");
 	glUseProgram(ProgramId);
 }
 
@@ -133,10 +115,11 @@ void CreateVBO(void)
 	//	Atributele varfurilor -  COORDONATE, CULORI, COORDONATE DE TEXTURARE;
 	GLfloat Vertices[] = {
 		//	Coordonate;					Culori;				Coordonate de texturare;
-		  -50.0f, -50.0f, 0.0f, 1.0f,	1.0f, 0.0f, 0.0f,	0.0f, 0.0f,	// Stanga jos;
-		   50.0f, -50.0f, 0.0f, 1.0f,   0.0f, 1.0f, 0.0f,	1.0f, 0.0f, // Dreapta jos;
-		   50.0f,  50.0f, 0.0f, 1.0f,   1.0f, 1.0f, 0.0f,	1.0f, 1.0f,	// Dreapta sus;
-		  -50.0f,  50.0f, 0.0f, 1.0f,   0.0f, 1.0f, 1.0f,	0.0f, 1.0f  // Stanga sus;
+        //	768 x 768,
+		  -384.0f, -384.0f, 0.0f, 1.0f,	  1.0f, 0.0f, 0.0f,	0.0f, 0.0f,	// Stanga jos;
+		   384.0f, -384.0f, 0.0f, 1.0f,   0.0f, 1.0f, 0.0f,	1.0f, 0.0f, // Dreapta jos;
+		   384.0f,  384.0f, 0.0f, 1.0f,   1.0f, 1.0f, 0.0f,	1.0f, 1.0f,	// Dreapta sus;
+		  -384.0f,  384.0f, 0.0f, 1.0f,   0.0f, 1.0f, 1.0f,	0.0f, 1.0f  // Stanga sus;
 	};
 
 	//	Indicii care determina ordinea de parcurgere a varfurilor;
@@ -212,7 +195,7 @@ void Initialize(void)
 	CreateVBO();
 
 	//	Incarcarea texturii;
-	LoadTexture("text_smiley_face.png");
+	LoadTexture("./assets/blob.png");
 
 	//  Initializarea shaderelor;
 	CreateShaders();
@@ -263,7 +246,7 @@ int main(int argc, char* argv[])
 	//  Se initializeaza GLUT si contextul OpenGL si se configureaza fereastra si modul de afisare;
 
 	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);					//	Se folosesc 2 buffere (unul pentru afisare si unul pentru randare => animatii cursive) si culori RGB;
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);  ///SCHIMBA IN RGBA					//	Se folosesc 2 buffere (unul pentru afisare si unul pentru randare => animatii cursive) si culori RGB;
 	glutInitWindowSize(winWidth, winHeight);						//  Dimensiunea ferestrei;
 	glutInitWindowPosition(100, 100);								//  Pozitia initiala a ferestrei;
 	glutCreateWindow("Utilizarea texturilor");		                //	Creeaza fereastra de vizualizare, indicand numele acesteia;
