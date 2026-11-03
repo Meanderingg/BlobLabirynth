@@ -32,14 +32,44 @@ GLfloat
 glm::mat4
 	myMatrix, resizeMatrix, matrTransl, matrRot, matrScale;
 
+// Environment variables
 float angle = 0;
 float positionX = 0, positionY = 0;
+int directionX, directionY;
+
+// Screen size
 float xMin = -960.f, xMax = 960.f, yMin = -540.f, yMax = 540.f;
+
+// Sprite size
+float spriteWidth = 64.0f;
+float spriteHeight = 64.0f;
+
+// Movement speed
+float speed = 10.f;
 
 bool keystates[256];
 
+// Frame counter
 int tomas_idea = 0;
 
+glm::vec4 calculateBorders(float posX, float posY, float spriteW, float spriteH)
+{
+    return glm::vec4(posX + spriteW / 2, posX - spriteW / 2, posY + spriteH / 2, posY - spriteH / 2);
+}
+
+bool screenCollision(float posX, float posY)
+{
+    glm::vec4 borders = calculateBorders(posX, posY, spriteWidth, spriteHeight); 
+    if (borders[0] > xMax || borders[1] < xMin || borders[2] > yMax || borders[3] < yMin)
+        return true;
+    else
+        return false;
+} 
+
+void collisionDetection(float widthA, float widthB, float heightA, float heightB)
+{
+    ;   
+}
 void NormalKeyDown(unsigned char key, int _, int __)
 {
 	keystates[key] = true;
@@ -72,18 +102,29 @@ void LoadTexture(const char* texturePath)
 
 void handleMovement() {
 	if (keystates['d']) {
-		positionX += 10;
-	}
-	if (keystates['a']) {
-		positionX -= 10;
-	}
-	if (keystates['w']) {
-		positionY += 10;
-	}
-	if (keystates['s']) {
-		positionY -= 10;
+		directionX = 1;
 	}
 
+	if (keystates['a']) {
+        directionX = -1;
+	}
+
+	if (keystates['w']) {
+        directionY = 1;
+	}
+
+	if (keystates['s']) {
+        directionY = -1;
+	}
+
+    float newPositionX = positionX + directionX * speed;
+    float newPositionY = positionY + directionY * speed;
+
+    if(! screenCollision(newPositionX, newPositionY))
+    {
+        positionX = newPositionX;
+        positionY = newPositionY;
+    }
 }
 
 void CreateShaders(void)
@@ -96,10 +137,10 @@ void CreateVBO(void)
 {
 
 	GLfloat Vertices[] = {
-		-32.0f, -32.0f, 0.0f, 1.0f,		
-		32.0f, -32.0f, 0.0f, 1.0f,  	
-		32.0f,  32.0f, 0.0f, 1.0f,  	
-		-32.0f,  32.0f, 0.0f, 1.0f, 
+		-spriteWidth / 2, -spriteHeight / 2, 0.0f, 1.0f,		
+		spriteWidth / 2, -spriteHeight / 2, 0.0f, 1.0f,		
+		spriteWidth / 2, spriteHeight / 2, 0.0f, 1.0f,		
+		-spriteWidth / 2, spriteHeight / 2, 0.0f, 1.0f,		
 	};
 
 	GLfloat Colors[] = {
