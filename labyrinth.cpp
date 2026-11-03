@@ -142,11 +142,21 @@ void CreateVBO(void)
 		-spriteWidth / 2, -spriteHeight / 2, 0.0f, 1.0f,		
 		spriteWidth / 2, -spriteHeight / 2, 0.0f, 1.0f,		
 		spriteWidth / 2, spriteHeight / 2, 0.0f, 1.0f,		
-		-spriteWidth / 2, spriteHeight / 2, 0.0f, 1.0f,		
+		-spriteWidth / 2, spriteHeight / 2, 0.0f, 1.0f,
+
+		-spriteWidth / 2 + 64, -spriteHeight / 2 + 64, 0.0f, 1.0f,		
+		spriteWidth / 2 + 64, -spriteHeight / 2 + 64, 0.0f, 1.0f,		
+		spriteWidth / 2 + 64, spriteHeight / 2 + 64, 0.0f, 1.0f,		
+		-spriteWidth / 2 + 64, spriteHeight / 2 + 64, 0.0f, 1.0f,	
+
 	};
 
 	GLfloat Colors[] = {
  		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		1.0f, 1.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 1.0f, 0.0f,
+		 		1.0f, 0.0f, 0.0f, 0.0f,
 		0.0f, 1.0f, 0.0f, 0.0f,
 		1.0f, 1.0f, 0.0f, 0.0f,
 		0.0f, 1.0f, 1.0f, 0.0f,
@@ -157,11 +167,19 @@ void CreateVBO(void)
 		1.0f, 0.0f,
 		1.0f, 1.0f,
 		0.0f, 1.0f,
+
+		    0.0f, 0.0f,
+    1.0f, 0.0f,
+    1.0f, 1.0f,
+    0.0f, 1.0f,
 	};
 
 	GLuint Indices[] = {
 	  0, 1, 2,
-	  0, 2, 3
+	  0, 2, 3,
+
+	  4, 5, 6,
+	  4, 6, 7
 	};
 
 	glGenVertexArrays(1, &VaoId);
@@ -258,6 +276,11 @@ void RenderFunction(void)
 	glUniform1i(glGetUniformLocation(ProgramId, "myTexture"), 0);
 
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+	myMatrix = resizeMatrix;
+	glUniformMatrix4fv(myMatrixLocation, 1, GL_FALSE, &myMatrix[0][0]);
+
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)(6 * sizeof(GLuint)));
 
 	glutSwapBuffers();
 	glFlush();
