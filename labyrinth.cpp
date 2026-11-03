@@ -274,7 +274,8 @@ void RenderFunction(void)
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	matrTransl = glm::translate(glm::mat4(1.0f), glm::vec3(positionX, positionY, 0.0));
-	matrScale = glm::scale(glm::mat4(1.0f), glm::vec3(1, 1, 0.0));
+	// Am scalat cu 0.9 ca sa: incapa intr-o celula de 60 x 60
+	matrScale = glm::scale(glm::mat4(1.0f), glm::vec3(0.9, 0.9, 0.0));
 	matrRot = glm::rotate(glm::mat4(1.0f), angle, glm::vec3(0.0, 0.0, 1.0));
 
 	myMatrix = resizeMatrix * matrScale * matrTransl * matrRot;
