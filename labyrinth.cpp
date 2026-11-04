@@ -33,7 +33,6 @@ glm::mat4
 	myMatrix, resizeMatrix, matrTransl, matrRot, matrScale;
 
 // Environment variables
-float angle = 0;
 float positionX = 0, positionY = 0;
 int directionX, directionY;
 
@@ -166,7 +165,7 @@ void CreateVBO(void)
 		0.0f, 1.0f, 0.0f, 0.0f,
 		1.0f, 1.0f, 0.0f, 0.0f,
 		0.0f, 1.0f, 1.0f, 0.0f,
-		 		1.0f, 0.0f, 0.0f, 0.0f,
+		1.0f, 0.0f, 0.0f, 0.0f,
 		0.0f, 1.0f, 0.0f, 0.0f,
 		1.0f, 1.0f, 0.0f, 0.0f,
 		0.0f, 1.0f, 1.0f, 0.0f,
@@ -276,9 +275,8 @@ void RenderFunction(void)
 	matrTransl = glm::translate(glm::mat4(1.0f), glm::vec3(positionX, positionY, 0.0));
 	// Am scalat cu 0.9 ca sa: incapa intr-o celula de 60 x 60
 	matrScale = glm::scale(glm::mat4(1.0f), glm::vec3(0.9, 0.9, 0.0));
-	matrRot = glm::rotate(glm::mat4(1.0f), angle, glm::vec3(0.0, 0.0, 1.0));
 
-	myMatrix = resizeMatrix * matrScale * matrTransl * matrRot;
+	myMatrix = resizeMatrix * matrScale * matrTransl;
 	glUniformMatrix4fv(myMatrixLocation, 1, GL_FALSE, &myMatrix[0][0]);
 
 	glActiveTexture(GL_TEXTURE0);
