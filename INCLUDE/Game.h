@@ -18,6 +18,11 @@ public:
     void KeyUp(unsigned char key, int _, int __);
     void KeyDown(unsigned char key, int _, int __);
     void CreateShaders();
+    void CreateObjects();
+    static glm::vec4 calculateBorders(float posX, float posY, float spriteW, float spriteH);
+    static bool collisionDetection(float positionXA, float positionYA, float widthA, float heightA, float positionXB, float positionYB, float widthB, float heightB);
+    bool screenCollision(float posX, float posY, float spriteW, float spriteH);
+    ~Game();
 
     constexpr static float xMin = -960.f, xMax = 960.f, yMin = -540.f, yMax = 540.f;
     std::vector<bool> keystates;
@@ -27,6 +32,7 @@ private:
     GLint matrixLocation;
     glm::mat4 projection;
     GLuint programId;
+    GLuint blobTexture = 0;
 };
 
 #endif

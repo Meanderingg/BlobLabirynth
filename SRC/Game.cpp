@@ -1,4 +1,5 @@
 #include "Game.h"
+#include "Player.h"
 #include "loadShaders.h"
 #include <SOIL.h>
 
@@ -37,6 +38,13 @@ void Game::CreateShaders() {
     glUniform1i(glGetUniformLocation(programId, "myTexture"), 0);
 }
 
+void Game::CreateObjects() {
+    LoadTexture(ASSET_DIR "/assets/blob.png", blobTexture);
+
+    objects.push_back(std::make_unique<Player>(glm::vec2(0.f, 0.f), glm::vec2(55.f, 55.f), &mesh, blobTexture));
+    objects.push_back(std::make_unique<Object>(glm::vec2(66.f, 66.f), glm::vec2(64.f, 64.f), &mesh, blobTexture));
+}
+
 void Game::update() {
     for (auto& object : objects) {
         object->update(*this);
@@ -60,4 +68,37 @@ void Game::KeyDown(unsigned char key, int _, int __)
 void Game::KeyUp(unsigned char key, int _, int __)
 {
 	keystates[key] = false;
+}
+
+glm::vec4 Game::calculateBorders(float posX, float posY, float spriteW, float spriteH)
+{
+    return glm::vec4(posX + spriteW / 2, posX - spriteW / 2, posY + spriteH / 2, posY - spriteH / 2);
+}
+
+bool Game::screenCollision(float posX, float posY, float spriteW, float spriteH)
+{
+    glm::vec4 borders = calculateBorders(posX, posY, spriteW, spriteH); 
+    if (borders[0] > this->xMax || borders[1] < this->xMin || borders[2] > this->yMax || borders[3] < this->yMin)
+        return true;
+    else
+        return false;
+} 
+
+bool Game::collisionDetection(float positionXA, float positionYA, float widthA, float heightA, float positionXB, float positionYB, float widthB, float heightB)
+{
+    // AABB-Collision here
+	glm::vec4 bordersA = calculateBorders(positionXA, positionYA, widthA, heightA);
+	glm::vec4 bordersB = calculateBorders(positionXB, positionYB, widthB, heightB);
+
+	bool left = bordersA[0] < bordersB[1];
+	bool right = bordersA[1] > bordersB[0];
+	bool down = bordersA[2] < bordersB[3];
+	bool up = bordersA[3] > bordersB[2];
+	
+	return !left && !right && !up && !down;
+}
+
+Game::~Game() {
+    glDeleteProgram(this->programId);
+    glDeleteTextures(1, &this->blobTexture);
 }
