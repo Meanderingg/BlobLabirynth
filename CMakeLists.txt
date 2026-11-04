@@ -16,8 +16,11 @@ endif()
 
 add_executable(labyrinth
     labyrinth.cpp
-    SRC/imageloader.cpp
     SRC/loadShaders.cpp
+    SRC/Object.cpp
+    SRC/Game.cpp
+    SRC/Player.cpp
+    SRC/Mesh.cpp
 )
 
 target_include_directories(labyrinth PRIVATE INCLUDE)
