@@ -7,6 +7,7 @@ Game::Game() {
     keystates = std::vector<bool>(256, false);
     projection = glm::ortho(xMin, xMax, yMin, yMax);
 
+    glutFullScreen();
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
@@ -43,6 +44,21 @@ void Game::CreateObjects() {
 
     objects.push_back(std::make_unique<Player>(glm::vec2(0.f, 0.f), glm::vec2(55.f, 55.f), &mesh, blobTexture));
     objects.push_back(std::make_unique<Object>(glm::vec2(66.f, 66.f), glm::vec2(64.f, 64.f), &mesh, blobTexture));
+
+    // 60x60 size for each cell
+    // width: 32 cells
+    // height: 18 cells
+    for (int i = 0; i < 32; i++)
+        for (int j = 0; j < 18; j++) {
+            float x = -960.f + 60/2 + i * 60;
+            float y = 540.f - 60/2 - j * 60;
+            // Objects are positioned by their center, so each wall sits at the middle of its cell side.
+            // Thickness is 2 because a 1-unit wall is under 1 pixel when the window is smaller than 1920x1080.
+            objects.push_back(std::make_unique<Object>(glm::vec2(x, y + 60/2), glm::vec2(60.f, 2.f), &mesh, 0));  // top
+            objects.push_back(std::make_unique<Object>(glm::vec2(x + 60/2, y), glm::vec2(2.f, 60.f), &mesh, 0));  // right
+            objects.push_back(std::make_unique<Object>(glm::vec2(x, y - 60/2), glm::vec2(60.f, 2.f), &mesh, 0));  // bottom
+            objects.push_back(std::make_unique<Object>(glm::vec2(x - 60/2, y), glm::vec2(2.f, 60.f), &mesh, 0));  // left
+        }
 }
 
 void Game::update() {
@@ -62,6 +78,11 @@ void Game::render() {
 
 void Game::KeyDown(unsigned char key, int _, int __)
 {
+	if (key == 27) {  // Esc
+		glutLeaveMainLoop();
+		return;
+	}
+
 	keystates[key] = true;
 }
 
