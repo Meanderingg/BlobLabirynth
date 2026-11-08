@@ -1,48 +1,52 @@
 #include "Player.h"
 #include "Game.h"
 
+#include "glm/gtc/constants.hpp"
+
 Player::Player(glm::vec2 pos, glm::vec2 size, const Mesh* mesh, GLuint texture, const std::vector<std::vector<int>>& labyrinthGrid)
-    : Object(pos, size, mesh, texture), labyrinthGrid(labyrinthGrid) {
-        this->gridPosition = glm::vec2(0, 0);
-    }
+    : Object(pos, size, mesh, texture), labyrinthGrid(labyrinthGrid) {}
 
 void Player::update(Game& game) {
     this->handleMovement(game);
 }
 
+bool Player::canMoveTo(Game& game, glm::vec2 gridPos) const {
+    glm::vec2 screenPos = game.gridToScreenPosition(gridPos);
+    return !game.screenCollision(screenPos.x, screenPos.y, this->size.x, this->size.y);
+}
+
 void Player::handleMovement(Game& game) {
-	this->direction = glm::vec2(0, 0);
-	
-	// Each key is cleared after it's read, so one press moves exactly one cell.
-	if (game.keystates['d']) {
-		this->direction.x = 1;
-		game.keystates['d'] = false;
+	// Angle 0 means the sprite faces right
+	struct KeyBinding { unsigned char key; glm::vec2 dir; float angle; };
+	static const KeyBinding bindings[] = {
+		{'d', glm::vec2( 1,  0), 0.f},
+		{'w', glm::vec2( 0, -1), glm::half_pi<float>()},
+		{'a', glm::vec2(-1,  0), glm::pi<float>()},
+		{'s', glm::vec2( 0,  1), -glm::half_pi<float>()},
+	};
+
+	const KeyBinding* pressed = nullptr;
+
+	for (const KeyBinding& binding : bindings) {
+		if (!game.keystates[binding.key])
+			continue;
+		game.keystates[binding.key] = false;
+		if (!pressed)
+			pressed = &binding;
 	}
 
-	if (game.keystates['a']) {
-        this->direction.x = -1;
-		game.keystates['a'] = false;
+	if (!pressed)
+		return;
+
+	if (pressed->dir != this->facing) {
+		this->facing = pressed->dir;
+		this->angle = pressed->angle;
+		return;
 	}
 
-	// Grid rows grow downward (row 0 is the top row).
-	if (game.keystates['w']) {
-        this->direction.y = -1;
-		game.keystates['w'] = false;
+	glm::vec2 newGridPosition = this->gridPosition + this->facing;
+	if (this->canMoveTo(game, newGridPosition)) {
+		this->gridPosition = newGridPosition;
+		this->position = game.gridToScreenPosition(newGridPosition);
 	}
-
-	if (game.keystates['s']) {
-        this->direction.y = 1;
-		game.keystates['s'] = false;
-	}
-
-
-    glm::vec2 newGridPosition = glm::vec2(this->gridPosition.x + this->direction.x, this->gridPosition.y + this->direction.y);
-    glm::vec2 newScreenPosition = game.gridToScreenPosition(newGridPosition);
-
-
-    if (!game.screenCollision(newScreenPosition.x, newScreenPosition.y, this->size.x, this->size.y))
-    {
-        this->gridPosition = newGridPosition;
-        this->position = newScreenPosition;
-    }
 }
