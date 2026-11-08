@@ -1,36 +1,52 @@
 #include "Player.h"
 #include "Game.h"
 
+#include "glm/gtc/constants.hpp"
+
+Player::Player(glm::vec2 pos, glm::vec2 size, const Mesh* mesh, GLuint texture, const std::vector<std::vector<int>>& labyrinthGrid)
+    : Object(pos, size, mesh, texture), labyrinthGrid(labyrinthGrid) {}
+
 void Player::update(Game& game) {
     this->handleMovement(game);
 }
 
+bool Player::canMoveTo(Game& game, glm::vec2 gridPos) const {
+    glm::vec2 screenPos = game.gridToScreenPosition(gridPos);
+    return !game.screenCollision(screenPos.x, screenPos.y, this->size.x, this->size.y);
+}
+
 void Player::handleMovement(Game& game) {
-	this->direction = glm::vec2(0, 0);
-	
-	if (game.keystates['d']) {
-		this->direction.x = 1;
+	// Angle 0 means the sprite faces right
+	struct KeyBinding { unsigned char key; glm::vec2 dir; float angle; };
+	static const KeyBinding bindings[] = {
+		{'d', glm::vec2( 1,  0), 0.f},
+		{'w', glm::vec2( 0, -1), glm::half_pi<float>()},
+		{'a', glm::vec2(-1,  0), glm::pi<float>()},
+		{'s', glm::vec2( 0,  1), -glm::half_pi<float>()},
+	};
+
+	const KeyBinding* pressed = nullptr;
+
+	for (const KeyBinding& binding : bindings) {
+		if (!game.keystates[binding.key])
+			continue;
+		game.keystates[binding.key] = false;
+		if (!pressed)
+			pressed = &binding;
 	}
 
-	if (game.keystates['a']) {
-        this->direction.x = -1;
+	if (!pressed)
+		return;
+
+	if (pressed->dir != this->facing) {
+		this->facing = pressed->dir;
+		this->angle = pressed->angle;
+		return;
 	}
 
-	if (game.keystates['w']) {
-        this->direction.y = 1;
+	glm::vec2 newGridPosition = this->gridPosition + this->facing;
+	if (this->canMoveTo(game, newGridPosition)) {
+		this->gridPosition = newGridPosition;
+		this->position = game.gridToScreenPosition(newGridPosition);
 	}
-
-	if (game.keystates['s']) {
-        this->direction.y = -1;
-	}
-
-    float newPositionX = this->position.x + direction.x * this->speed;
-    float newPositionY = this->position.y + direction.y * this->speed;
-
-    if (!game.screenCollision(newPositionX, newPositionY, this->size.x, this->size.y) && 
-		!Game::collisionDetection(newPositionX, newPositionY, this->size.x - 20, this->size.y - 20, 66, 66, this->size.x, this->size.y))
-    {
-        this->position.x = newPositionX;
-        this->position.y = newPositionY;
-    }
 }
