@@ -6,10 +6,13 @@
 class Player : public Object {
 public:
     using Object::Object;
+    Player(glm::vec2 pos, glm::vec2 size, const Mesh* mesh, GLuint texture, const std::vector<std::vector<int>>& labyrinthGrid);
     void update(Game& game) override;
     void handleMovement(Game& game);
-
+    
+    std::vector<std::vector<int>> labyrinthGrid;
     glm::vec2 direction;
+    glm::vec2 gridPosition;
     float speed = 10.f;
 };
 

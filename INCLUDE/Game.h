@@ -21,6 +21,7 @@ public:
     void CreateObjects();
     static glm::vec4 calculateBorders(float posX, float posY, float spriteW, float spriteH);
     static bool collisionDetection(float positionXA, float positionYA, float widthA, float heightA, float positionXB, float positionYB, float widthB, float heightB);
+    glm::vec2 gridToScreenPosition(glm::vec2 gridPosition);
     bool screenCollision(float posX, float posY, float spriteW, float spriteH);
     ~Game();
 
@@ -33,6 +34,8 @@ private:
     glm::mat4 projection;
     GLuint programId;
     GLuint blobTexture = 0;
+    glm::vec2 cellLayout;
+    glm::vec2 cellSize;
 };
 
 #endif
