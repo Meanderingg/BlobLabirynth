@@ -43,8 +43,6 @@ private:
     GLuint Hole_Left_texture = 0;
     GLuint Hole_Both_texture = 0;
 
-    glm::vec2 cellLayout;
-    glm::vec2 cellSize;
     Labyrinth labyrinth;
 };
 

@@ -91,7 +91,7 @@ void Game::CreateObjects() {
 
     glm::vec2 topLeftCell = glm::vec2(this->xMin + this->cellSize.x / 2, this->yMax - this->cellSize.y / 2);
 
-    objects.push_back(std::make_unique<Player>(glm::vec2(topLeftCell.x, topLeftCell.y), glm::vec2(55.f, 55.f), &mesh, blobTexture, labyrinth.getLabyrinth()));
+    objects.push_back(std::make_unique<Player>(glm::vec2(topLeftCell.x, topLeftCell.y), glm::vec2(32.f, 32.f), &mesh, blobTexture, labyrinth.getLabyrinth()));
 }
 
 void Game::update() {
