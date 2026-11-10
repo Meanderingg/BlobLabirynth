@@ -61,6 +61,7 @@ void Game::CreateObjects() {
         for (int j = 0; j < cellLayout.y; j++) {
             float x = this->xMin + this->cellSize.x / 2 + i * this->cellSize.x;
             float y = this->yMax - this->cellSize.y / 2 - j * this->cellSize.y;
+            //std::cout<<i<<" "<<j<<" "<<labyrinth.getLabyrinth()[i][j]<<'\n';
             // Objects are positioned by their center, so each wall sits at the middle of its cell side.
             // Thickness is 2 because a 1-unit wall is under 1 pixel when the window is smaller than 1920x1080.
 
@@ -70,11 +71,11 @@ void Game::CreateObjects() {
                 //objects.push_back(std::make_unique<Object>(glm::vec2(x, y + this->cellSize.y / 2), glm::vec2(this->cellSize.x, wallWidth), &mesh, 0));  // top
                 //objects.push_back(std::make_unique<Object>(glm::vec2(x + this->cellSize.x / 2, y), glm::vec2(wallWidth, this->cellSize.y), &mesh, 0));  // right
                 //objects.push_back(std::make_unique<Object>(glm::vec2(x, y - this->cellSize.y / 2), glm::vec2(this->cellSize.x, wallWidth), &mesh, 0));  // bottom
-                objects.push_back(std::make_unique<Object>(glm::vec2(x - this->cellSize.x / 2, y), glm::vec2(this->cellSize.x, this->cellSize.y), &mesh, Hole_Up_texture));  // left
+                objects.push_back(std::make_unique<Object>(glm::vec2(x, y), glm::vec2(this->cellSize.x, this->cellSize.y), &mesh, Hole_Up_texture));  // left
                 }
 
             if (labyrinth.getLabyrinth()[i][j] == 1){
-                objects.push_back(std::make_unique<Object>(glm::vec2(x, y + this->cellSize.y / 2), glm::vec2(this->cellSize.x, this->cellSize.y), &mesh, Hole_Left_texture));  // top
+                objects.push_back(std::make_unique<Object>(glm::vec2(x, y), glm::vec2(this->cellSize.x, this->cellSize.y), &mesh, Hole_Left_texture));  // top
                 //objects.push_back(std::make_unique<Object>(glm::vec2(x + this->cellSize.x / 2, y), glm::vec2(wallWidth, this->cellSize.y), &mesh, 0));  // right
                 //objects.push_back(std::make_unique<Object>(glm::vec2(x, y - this->cellSize.y / 2), glm::vec2(this->cellSize.x, wallWidth), &mesh, 0));  // bottom
                 //objects.push_back(std::make_unique<Object>(glm::vec2(x - this->cellSize.x / 2, y), glm::vec2(wallWidth, this->cellSize.y), &mesh, 0));  // left
@@ -82,7 +83,7 @@ void Game::CreateObjects() {
 
             if (labyrinth.getLabyrinth()[i][j] == 2){
                 //objects.push_back(std::make_unique<Object>(glm::vec2(x, y + this->cellSize.y / 2), glm::vec2(this->cellSize.x, wallWidth), &mesh, 0));  // top
-                objects.push_back(std::make_unique<Object>(glm::vec2(x + this->cellSize.x / 2, y), glm::vec2(this->cellSize.x, this->cellSize.y), &mesh, Hole_Both_texture));  // both holes 
+                objects.push_back(std::make_unique<Object>(glm::vec2(x , y), glm::vec2(this->cellSize.x, this->cellSize.y), &mesh, Hole_Both_texture));  // both holes 
                 //objects.push_back(std::make_unique<Object>(glm::vec2(x, y - this->cellSize.y / 2), glm::vec2(this->cellSize.x, wallWidth), &mesh, 0));  // bottom
                 //objects.push_back(std::make_unique<Object>(glm::vec2(x - this->cellSize.x / 2, y), glm::vec2(wallWidth, this->cellSize.y), &mesh, 0));  // left
                 }
