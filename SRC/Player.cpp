@@ -49,6 +49,11 @@ bool Player::canMoveTo(Game& game, glm::vec2 gridPosNew) const {
 
 }
 
+bool hasWon(Game& game, glm::vec2 gridPosition){
+    
+    return (gridPosition == game.cellLayout - glm::vec2(1, 1));
+}
+
 void Player::handleMovement(Game& game) {
     // Angle 0 means the sprite faces right
 	struct KeyBinding { unsigned char key; glm::vec2 dir; float angle; };
@@ -88,6 +93,9 @@ void Player::handleMovement(Game& game) {
     this->gridPosition = glm::vec2(
         std::floor((this->position.x - Game::xMin) / game.cellSize.x),
         std::floor((Game::yMax - this->position.y) / game.cellSize.y));
+
+    if(hasWon(game, this->gridPosition))
+        glutLeaveMainLoop();
 }
 
 bool Player::collidesWithWalls(const Game& game, glm::vec2 pos) const {
