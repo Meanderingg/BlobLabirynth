@@ -18,8 +18,6 @@ bool Player::canMoveTo(Game& game, glm::vec2 gridPosNew) const {
     if (this->facing == glm::vec2(0,1)) key = 's';
 
     glm::vec2 screenPos = game.gridToScreenPosition(gridPosNew);
-    std::cout<<gridPosition.x<<" "<<gridPosition.y<<'\n';
-    std::cout<<gridPosNew.x<<" "<<gridPosNew.y<<'\n';
 
     if(game.screenCollision(screenPos.x, screenPos.y, this->size.x, this->size.y))
         return false;
@@ -50,13 +48,13 @@ bool Player::canMoveTo(Game& game, glm::vec2 gridPosNew) const {
 }
 
 void Player::handleMovement(Game& game) {
-        // Angle 0 means the sprite faces right
+    // Angle 0 means the sprite faces right
 	struct KeyBinding { unsigned char key; glm::vec2 dir; float angle; };
 	static const KeyBinding bindings[] = {
-		{'d', glm::vec2( 1,  0), 0.f},
-		{'w', glm::vec2( 0, -1), glm::half_pi<float>()},
+		{'d', glm::vec2(1,  0), 0.f},
+		{'w', glm::vec2(0, 1), glm::half_pi<float>()},
 		{'a', glm::vec2(-1,  0), glm::pi<float>()},
-		{'s', glm::vec2( 0,  1), -glm::half_pi<float>()},
+		{'s', glm::vec2(0,  -1), -glm::half_pi<float>()},
 	};
 
 	const KeyBinding* pressed = nullptr;
@@ -64,7 +62,6 @@ void Player::handleMovement(Game& game) {
 	for (const KeyBinding& binding : bindings) {
 		if (!game.keystates[binding.key])
 			continue;
-		game.keystates[binding.key] = false;
 		if (!pressed)
 			pressed = &binding;
 	}
@@ -78,9 +75,34 @@ void Player::handleMovement(Game& game) {
 		return;
 	}
 
-	glm::vec2 newGridPosition = this->gridPosition + this->facing;
-	if (this->canMoveTo(game, newGridPosition)) {
-		this->gridPosition = newGridPosition;
-		this->position = game.gridToScreenPosition(newGridPosition);
+    glm::vec2 newPosition = this->position + this->speed * this->facing;
+    glm::vec2 topLeftCurrentCell = glm::vec2(game.xMin + 60 * this->gridPosition.x, game.yMax - 60 * this->gridPosition.y);
+    // Check if gone to the right
+    if (newPosition.x - topLeftCurrentCell.x >= 60) {
+        this->gridPosition.x++;
+    }
+    // Check if gone down
+    if (topLeftCurrentCell.y - newPosition.y >= 60) {
+        this->gridPosition.y++;
+    }
+    // Check if gone to the left
+    if (topLeftCurrentCell.x - newPosition.x >= 0 ) {
+        this->gridPosition.x--;
+    }
+    // Check if gone up
+    if (newPosition.y - topLeftCurrentCell.y >= 0) {
+        this->gridPosition.y--;
+    }
+
+    std::cout << this->gridPosition.x << " " << this->gridPosition.y << "\n";
+    int currentCell = this->labyrinthGrid[this->gridPosition.x][this->gridPosition.y];
+    if (currentCell == 0) {
+        // Check collision with left wall
+        if (Game::collisionDetection(newPosition.x, newPosition.y, this->size.x, this->size.y, topLeftCurrentCell.x, topLeftCurrentCell.y - game.cellSize.y / 2, game.wallWidth, game.cellSize.y))
+            return;
+    }
+
+ 	if (!game.screenCollision(newPosition.x, newPosition.y, this->size.x, this->size.y)) {
+		this->position = newPosition;
 	}
 }
