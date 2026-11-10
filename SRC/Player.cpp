@@ -76,33 +76,46 @@ void Player::handleMovement(Game& game) {
 	}
 
     glm::vec2 newPosition = this->position + this->speed * this->facing;
-    glm::vec2 topLeftCurrentCell = glm::vec2(game.xMin + 60 * this->gridPosition.x, game.yMax - 60 * this->gridPosition.y);
-    // Check if gone to the right
-    if (newPosition.x - topLeftCurrentCell.x >= 60) {
-        this->gridPosition.x++;
-    }
-    // Check if gone down
-    if (topLeftCurrentCell.y - newPosition.y >= 60) {
-        this->gridPosition.y++;
-    }
-    // Check if gone to the left
-    if (topLeftCurrentCell.x - newPosition.x >= 0 ) {
-        this->gridPosition.x--;
-    }
-    // Check if gone up
-    if (newPosition.y - topLeftCurrentCell.y >= 0) {
-        this->gridPosition.y--;
-    }
 
-    std::cout << this->gridPosition.x << " " << this->gridPosition.y << "\n";
-    int currentCell = this->labyrinthGrid[this->gridPosition.x][this->gridPosition.y];
-    if (currentCell == 0) {
-        // Check collision with left wall
-        if (Game::collisionDetection(newPosition.x, newPosition.y, this->size.x, this->size.y, topLeftCurrentCell.x, topLeftCurrentCell.y - game.cellSize.y / 2, game.wallWidth, game.cellSize.y))
-            return;
-    }
+    if (game.screenCollision(newPosition.x, newPosition.y, this->size.x, this->size.y))
+        return;
+    if (this->collidesWithWalls(game, newPosition))
+        return;
 
- 	if (!game.screenCollision(newPosition.x, newPosition.y, this->size.x, this->size.y)) {
-		this->position = newPosition;
-	}
+    this->position = newPosition;
+    this->gridPosition = glm::vec2(
+        std::floor((this->position.x - Game::xMin) / game.cellSize.x),
+        std::floor((Game::yMax - this->position.y) / game.cellSize.y));
+}
+
+bool Player::collidesWithWalls(const Game& game, glm::vec2 pos) const {
+    const int cols = game.cellLayout.x;  
+    const int rows = game.cellLayout.y;  
+
+    // The cell the blob's center is in
+    int cx = (int)std::floor((pos.x - Game::xMin) / game.cellSize.x);
+    int cy = (int)std::floor((Game::yMax - pos.y) / game.cellSize.y);
+
+    // Check a 3x3 grid around the center cell
+    for (int i = cx - 1; i <= cx + 1; i++) {
+        for (int j = cy - 1; j <= cy + 1; j++) {
+            if (i < 0 || i >= cols || j < 0 || j >= rows)
+                continue; 
+
+            float cellLeft = Game::xMin + i * game.cellSize.x;
+            float cellTop  = Game::yMax - j * game.cellSize.y;
+            int cell = this->labyrinthGrid[i][j];
+
+            if (cell == 0 &&  // left wall
+                Game::collisionDetection(pos.x, pos.y, this->size.x, this->size.y,
+                                         cellLeft, cellTop - game.cellSize.y / 2, game.wallWidth, game.cellSize.y))
+                return true;
+
+            if (cell == 1 &&  // top wall
+                Game::collisionDetection(pos.x, pos.y, this->size.x, this->size.y,
+                                         cellLeft + game.cellSize.x / 2, cellTop, game.cellSize.x, game.wallWidth))
+                return true;
+        }
+    }
+    return false;
 }
