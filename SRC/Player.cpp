@@ -68,22 +68,29 @@ void Player::handleMovement(Game& game) {
 			pressed = &binding;
 	}
 
-	if (!pressed)
+	if (!pressed) {
+		this->blockedByWall = false;
 		return;
+	}
 
 	if (pressed->dir != this->facing) {
 		this->facing = pressed->dir;
 		this->angle = pressed->angle;
+		this->blockedByWall = false;
 		return;
 	}
 
     glm::vec2 newPosition = this->position + this->speed * this->facing;
 
-    if (game.screenCollision(newPosition.x, newPosition.y, this->size.x, this->size.y))
+    if (game.screenCollision(newPosition.x, newPosition.y, this->size.x, this->size.y) ||
+        this->collidesWithWalls(game, newPosition)) {
+        if (!this->blockedByWall)
+            game.decreaseScore(10);
+        this->blockedByWall = true;
         return;
-    if (this->collidesWithWalls(game, newPosition))
-        return;
+    }
 
+    this->blockedByWall = false;
     this->position = newPosition;
     this->gridPosition = glm::vec2(
         std::floor((this->position.x - Game::xMin) / game.cellSize.x),

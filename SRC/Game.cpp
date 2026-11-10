@@ -105,6 +105,7 @@ void Game::render() {
     for (auto& object : objects) {
         object->render(matrixLocation, projection);
     }
+    drawText("SCORE: " + std::to_string(score), glutGet(GLUT_WINDOW_WIDTH) - 120, glutGet(GLUT_WINDOW_HEIGHT) - 40, 0.f, 0.f, 0.f);
     glutSwapBuffers();
     glFlush();
 }
@@ -150,6 +151,20 @@ bool Game::collisionDetection(float positionXA, float positionYA, float widthA, 
 	bool up = bordersA[3] > bordersB[2];
 	
 	return !left && !right && !up && !down;
+}
+
+void Game::decreaseScore(int amount) {
+    // The score stops at 0; nothing else happens when it gets there
+    score = std::max(0, score - amount);
+}
+
+void Game::drawText(const std::string& text, int x, int y, float r, float g, float b) {
+    glUseProgram(0);
+    glBindVertexArray(0);
+    glColor3f(r, g, b);    
+    glWindowPos2i(x, y); 
+    glutBitmapString(GLUT_BITMAP_HELVETICA_18, reinterpret_cast<const unsigned char*>(text.c_str()));
+    glUseProgram(programId);
 }
 
 glm::vec2 Game::gridToScreenPosition(glm::vec2 gridPosition) {
