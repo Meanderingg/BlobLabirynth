@@ -1,9 +1,12 @@
 #include "Game.h"
 #include "Player.h"
+#include "Labyrinth.h"
 #include "loadShaders.h"
 #include <SOIL.h>
+#include <iostream>
 
 Game::Game() {
+    std::cout<<"Game constructor";
     keystates = std::vector<bool>(256, false);
     projection = glm::ortho(xMin, xMax, yMin, yMax);
     cellLayout = glm::vec2(32, 18);
@@ -13,6 +16,8 @@ Game::Game() {
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
+
+    labyrinth = Labyrinth(cellLayout.x, cellLayout.y);
 }
 
 void Game::LoadTexture(const char* texturePath, GLuint& texture) {
@@ -58,10 +63,30 @@ void Game::CreateObjects() {
             float y = this->yMax - this->cellSize.y / 2 - j * this->cellSize.y;
             // Objects are positioned by their center, so each wall sits at the middle of its cell side.
             // Thickness is 2 because a 1-unit wall is under 1 pixel when the window is smaller than 1920x1080.
-            objects.push_back(std::make_unique<Object>(glm::vec2(x, y + this->cellSize.y / 2), glm::vec2(this->cellSize.x, wallWidth), &mesh, 0));  // top
-            objects.push_back(std::make_unique<Object>(glm::vec2(x + this->cellSize.x / 2, y), glm::vec2(wallWidth, this->cellSize.y), &mesh, 0));  // right
-            objects.push_back(std::make_unique<Object>(glm::vec2(x, y - this->cellSize.y / 2), glm::vec2(this->cellSize.x, wallWidth), &mesh, 0));  // bottom
-            objects.push_back(std::make_unique<Object>(glm::vec2(x - this->cellSize.x / 2, y), glm::vec2(wallWidth, this->cellSize.y), &mesh, 0));  // left
+
+            // Deciding which wall is not drawn
+
+            std::cout << "For my sanity";
+            if (labyrinth.getCell(i, j) == 0){
+                //objects.push_back(std::make_unique<Object>(glm::vec2(x, y + this->cellSize.y / 2), glm::vec2(this->cellSize.x, wallWidth), &mesh, 0));  // top
+                //objects.push_back(std::make_unique<Object>(glm::vec2(x + this->cellSize.x / 2, y), glm::vec2(wallWidth, this->cellSize.y), &mesh, 0));  // right
+                //objects.push_back(std::make_unique<Object>(glm::vec2(x, y - this->cellSize.y / 2), glm::vec2(this->cellSize.x, wallWidth), &mesh, 0));  // bottom
+                objects.push_back(std::make_unique<Object>(glm::vec2(x - this->cellSize.x / 2, y), glm::vec2(wallWidth, this->cellSize.y), &mesh, 0));  // left
+                }
+
+            if (labyrinth.getCell(i, j) == 1){
+                objects.push_back(std::make_unique<Object>(glm::vec2(x, y + this->cellSize.y / 2), glm::vec2(this->cellSize.x, wallWidth), &mesh, 0));  // top
+                //objects.push_back(std::make_unique<Object>(glm::vec2(x + this->cellSize.x / 2, y), glm::vec2(wallWidth, this->cellSize.y), &mesh, 0));  // right
+                //objects.push_back(std::make_unique<Object>(glm::vec2(x, y - this->cellSize.y / 2), glm::vec2(this->cellSize.x, wallWidth), &mesh, 0));  // bottom
+                //objects.push_back(std::make_unique<Object>(glm::vec2(x - this->cellSize.x / 2, y), glm::vec2(wallWidth, this->cellSize.y), &mesh, 0));  // left
+                }
+
+            if (labyrinth.getCell(i, j) == 2){
+                //objects.push_back(std::make_unique<Object>(glm::vec2(x, y + this->cellSize.y / 2), glm::vec2(this->cellSize.x, wallWidth), &mesh, 0));  // top
+                //objects.push_back(std::make_unique<Object>(glm::vec2(x + this->cellSize.x / 2, y), glm::vec2(wallWidth, this->cellSize.y), &mesh, 0));  // right
+                //objects.push_back(std::make_unique<Object>(glm::vec2(x, y - this->cellSize.y / 2), glm::vec2(this->cellSize.x, wallWidth), &mesh, 0));  // bottom
+                //objects.push_back(std::make_unique<Object>(glm::vec2(x - this->cellSize.x / 2, y), glm::vec2(wallWidth, this->cellSize.y), &mesh, 0));  // left
+                }
         }
 }
 

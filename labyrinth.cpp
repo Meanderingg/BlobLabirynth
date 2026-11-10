@@ -33,6 +33,7 @@ int main(int argc, char* argv[])
 
 	glewInit();
 
+    std::cout<<"???";
 	game = std::make_unique<Game>();
 	game->CreateShaders();
 	game->CreateObjects();
