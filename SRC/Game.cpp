@@ -6,7 +6,6 @@
 #include <iostream>
 
 Game::Game() {
-    std::cout<<"Game constructor";
     keystates = std::vector<bool>(256, false);
     projection = glm::ortho(xMin, xMax, yMin, yMax);
     cellLayout = glm::vec2(32, 18);
@@ -66,7 +65,6 @@ void Game::CreateObjects() {
 
             // Deciding which wall is not drawn
 
-            std::cout << "For my sanity";
             if (labyrinth.getCell(i, j) == 0){
                 //objects.push_back(std::make_unique<Object>(glm::vec2(x, y + this->cellSize.y / 2), glm::vec2(this->cellSize.x, wallWidth), &mesh, 0));  // top
                 //objects.push_back(std::make_unique<Object>(glm::vec2(x + this->cellSize.x / 2, y), glm::vec2(wallWidth, this->cellSize.y), &mesh, 0));  // right

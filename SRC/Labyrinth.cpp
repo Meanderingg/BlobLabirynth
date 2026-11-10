@@ -3,25 +3,10 @@
 #include <time.h>
 #include <iostream>
 
-Labyrinth::~Labyrinth() {
-   delete[] labyrinthMatrix; 
-}
-
-Labyrinth::Labyrinth(){
-    rowCount = 0;
-    columnCount = 0;
-    labyrinthMatrix = nullptr;
-    std::cout << "Consturctor vid";
-
-}
 Labyrinth::Labyrinth(int rowCount, int columnCount) {
-    std::cout<<"Constructor";
     this->rowCount = rowCount;
     this->columnCount = columnCount;
-    labyrinthMatrix = new int* [rowCount + 1];
-    for (int i = 0; i < rowCount; i ++)
-        labyrinthMatrix[i] = new int[columnCount + 1];
-
+    labyrinthMatrix = std::vector<std::vector<int>>(rowCount, std::vector<int> (columnCount, 0));
     srand(time(0));
     populateLabyrinth();
 }
