@@ -46,12 +46,13 @@ void Game::CreateShaders() {
 }
 
 void Game::CreateObjects() {
+
     LoadTexture(ASSET_DIR "/assets/blob.png", blobTexture);
+    LoadTexture(ASSET_DIR "/assets/Hole_Up.png", Hole_Up_texture);
+    LoadTexture(ASSET_DIR "/assets/Hole_Left.png", Hole_Left_texture);
+    LoadTexture(ASSET_DIR "/assets/No_Hole.png", Hole_Both_texture);
 
-    float wallWidth = 2.f;
-    glm::vec2 topLeftCell = glm::vec2(this->xMin + this->cellSize.x / 2, this->yMax - this->cellSize.y / 2);
-
-    objects.push_back(std::make_unique<Player>(glm::vec2(topLeftCell.x, topLeftCell.y), glm::vec2(55.f, 55.f), &mesh, blobTexture, labyrinth.getLabyrinth()));
+    //float wallWidth = 2.f;
 
     // 60x60 size for each cell
     // width: 32 cells
@@ -69,11 +70,11 @@ void Game::CreateObjects() {
                 //objects.push_back(std::make_unique<Object>(glm::vec2(x, y + this->cellSize.y / 2), glm::vec2(this->cellSize.x, wallWidth), &mesh, 0));  // top
                 //objects.push_back(std::make_unique<Object>(glm::vec2(x + this->cellSize.x / 2, y), glm::vec2(wallWidth, this->cellSize.y), &mesh, 0));  // right
                 //objects.push_back(std::make_unique<Object>(glm::vec2(x, y - this->cellSize.y / 2), glm::vec2(this->cellSize.x, wallWidth), &mesh, 0));  // bottom
-                objects.push_back(std::make_unique<Object>(glm::vec2(x - this->cellSize.x / 2, y), glm::vec2(wallWidth, this->cellSize.y), &mesh, 0));  // left
+                objects.push_back(std::make_unique<Object>(glm::vec2(x - this->cellSize.x / 2, y), glm::vec2(this->cellSize.x, this->cellSize.y), &mesh, Hole_Up_texture));  // left
                 }
 
             if (labyrinth.getLabyrinth()[i][j] == 1){
-                objects.push_back(std::make_unique<Object>(glm::vec2(x, y + this->cellSize.y / 2), glm::vec2(this->cellSize.x, wallWidth), &mesh, 0));  // top
+                objects.push_back(std::make_unique<Object>(glm::vec2(x, y + this->cellSize.y / 2), glm::vec2(this->cellSize.x, this->cellSize.y), &mesh, Hole_Left_texture));  // top
                 //objects.push_back(std::make_unique<Object>(glm::vec2(x + this->cellSize.x / 2, y), glm::vec2(wallWidth, this->cellSize.y), &mesh, 0));  // right
                 //objects.push_back(std::make_unique<Object>(glm::vec2(x, y - this->cellSize.y / 2), glm::vec2(this->cellSize.x, wallWidth), &mesh, 0));  // bottom
                 //objects.push_back(std::make_unique<Object>(glm::vec2(x - this->cellSize.x / 2, y), glm::vec2(wallWidth, this->cellSize.y), &mesh, 0));  // left
@@ -81,11 +82,15 @@ void Game::CreateObjects() {
 
             if (labyrinth.getLabyrinth()[i][j] == 2){
                 //objects.push_back(std::make_unique<Object>(glm::vec2(x, y + this->cellSize.y / 2), glm::vec2(this->cellSize.x, wallWidth), &mesh, 0));  // top
-                //objects.push_back(std::make_unique<Object>(glm::vec2(x + this->cellSize.x / 2, y), glm::vec2(wallWidth, this->cellSize.y), &mesh, 0));  // right
+                objects.push_back(std::make_unique<Object>(glm::vec2(x + this->cellSize.x / 2, y), glm::vec2(this->cellSize.x, this->cellSize.y), &mesh, Hole_Both_texture));  // both holes 
                 //objects.push_back(std::make_unique<Object>(glm::vec2(x, y - this->cellSize.y / 2), glm::vec2(this->cellSize.x, wallWidth), &mesh, 0));  // bottom
                 //objects.push_back(std::make_unique<Object>(glm::vec2(x - this->cellSize.x / 2, y), glm::vec2(wallWidth, this->cellSize.y), &mesh, 0));  // left
                 }
         }
+
+    glm::vec2 topLeftCell = glm::vec2(this->xMin + this->cellSize.x / 2, this->yMax - this->cellSize.y / 2);
+
+    objects.push_back(std::make_unique<Player>(glm::vec2(topLeftCell.x, topLeftCell.y), glm::vec2(55.f, 55.f), &mesh, blobTexture, labyrinth.getLabyrinth()));
 }
 
 void Game::update() {
