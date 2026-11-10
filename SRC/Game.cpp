@@ -51,6 +51,7 @@ void Game::CreateObjects() {
     LoadTexture(ASSET_DIR "/assets/Hole_Up.png", Hole_Up_texture);
     LoadTexture(ASSET_DIR "/assets/Hole_Left.png", Hole_Left_texture);
     LoadTexture(ASSET_DIR "/assets/No_Hole.png", Hole_Both_texture);
+    LoadTexture(ASSET_DIR "/assets/Goal.png", Goal_Texture);
 
     //float wallWidth = 2.f;
 
@@ -66,6 +67,11 @@ void Game::CreateObjects() {
             // Thickness is 2 because a 1-unit wall is under 1 pixel when the window is smaller than 1920x1080.
 
             // Deciding which wall is not drawn
+
+            if ((i == cellLayout.x - 1 ) && (j == cellLayout.y - 1)){
+                objects.push_back(std::make_unique<Object>(glm::vec2(x, y), glm::vec2(this->cellSize.x, this->cellSize.y), &mesh, Goal_Texture));  // winning 
+                continue;
+            }
 
             if (labyrinth.getLabyrinth()[i][j] == 0){
                 //objects.push_back(std::make_unique<Object>(glm::vec2(x, y + this->cellSize.y / 2), glm::vec2(this->cellSize.x, wallWidth), &mesh, 0));  // top
@@ -87,6 +93,7 @@ void Game::CreateObjects() {
                 //objects.push_back(std::make_unique<Object>(glm::vec2(x, y - this->cellSize.y / 2), glm::vec2(this->cellSize.x, wallWidth), &mesh, 0));  // bottom
                 //objects.push_back(std::make_unique<Object>(glm::vec2(x - this->cellSize.x / 2, y), glm::vec2(wallWidth, this->cellSize.y), &mesh, 0));  // left
                 }
+
         }
 
     glm::vec2 topLeftCell = glm::vec2(this->xMin + this->cellSize.x / 2, this->yMax - this->cellSize.y / 2);

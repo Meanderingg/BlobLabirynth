@@ -46,6 +46,7 @@ private:
     GLuint Hole_Up_texture = 0;
     GLuint Hole_Left_texture = 0;
     GLuint Hole_Both_texture = 0;
+    GLuint Goal_Texture = 0;
 
     Labyrinth labyrinth;
 };

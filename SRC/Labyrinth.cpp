@@ -18,6 +18,10 @@ void Labyrinth::populateLabyrinth(){
             labyrinthMatrix[i][j] = randomNumber;    
         }
     }
+    
+    labyrinthMatrix[rowCount - 1][columnCount - 1] = 2;
+    labyrinthMatrix[0][1] = 2;
+    labyrinthMatrix[1][0] = 2;
 
 }
 
