@@ -15,6 +15,7 @@ public:
     glm::vec2 gridPosition = glm::vec2(0, 0);
     glm::vec2 facing = glm::vec2(0, 0);  
     float speed = 10.f;
+
 };
 
 #endif

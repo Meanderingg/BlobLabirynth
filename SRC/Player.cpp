@@ -10,13 +10,44 @@ void Player::update(Game& game) {
     this->handleMovement(game);
 }
 
-bool Player::canMoveTo(Game& game, glm::vec2 gridPos) const {
-    glm::vec2 screenPos = game.gridToScreenPosition(gridPos);
-    return !game.screenCollision(screenPos.x, screenPos.y, this->size.x, this->size.y);
+bool Player::canMoveTo(Game& game, glm::vec2 gridPosNew) const {
+    unsigned char key;
+    if (this->facing == glm::vec2(1,0)) key = 'd';
+    if (this->facing == glm::vec2(0,-1)) key = 'w';
+    if (this->facing == glm::vec2(-1,0)) key = 'a';
+    if (this->facing == glm::vec2(0,1)) key = 's';
+
+    glm::vec2 screenPos = game.gridToScreenPosition(gridPosNew);
+    std::cout<<gridPosition.x<<" "<<gridPosition.y<<'\n';
+    std::cout<<gridPosNew.x<<" "<<gridPosNew.y<<'\n';
+
+    if(game.screenCollision(screenPos.x, screenPos.y, this->size.x, this->size.y))
+        return false;
+
+    if (this->labyrinthGrid[this->gridPosition.x][this->gridPosition.y] == 0 && key =='w')
+        return true;
+
+    if (this -> labyrinthGrid[this->gridPosition.x][this->gridPosition.y] == 1 && key == 'a')
+        return true;
+
+    if (this -> labyrinthGrid[this->gridPosition.x][this->gridPosition.y] == 2 && (key == 'a' || key == 'w'))
+        return true;
+
+    if(labyrinthGrid[gridPosNew.x][gridPosNew.y] == 0 && key =='s')
+        return true;
+
+    if(labyrinthGrid[gridPosNew.x][gridPosNew.y] == 1 && key =='d')
+        return true;
+
+    if(labyrinthGrid[gridPosNew.x][gridPosNew.y] == 2 && key =='d')
+        return true;
+
+    return false;
+
 }
 
 void Player::handleMovement(Game& game) {
-	// Angle 0 means the sprite faces right
+        // Angle 0 means the sprite faces right
 	struct KeyBinding { unsigned char key; glm::vec2 dir; float angle; };
 	static const KeyBinding bindings[] = {
 		{'d', glm::vec2( 1,  0), 0.f},
