@@ -41,6 +41,9 @@ bool Player::canMoveTo(Game& game, glm::vec2 gridPosNew) const {
 
     if(labyrinthGrid[gridPosNew.x][gridPosNew.y] == 2 && key =='d')
         return true;
+    
+    if(labyrinthGrid[gridPosNew.x][gridPosNew.y] == 2 && key =='s')
+        return true;
 
     return false;
 

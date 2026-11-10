@@ -11,5 +11,5 @@ class Labyrinth {
          Labyrinth(int rowCount, int columnCount);
          ~Labyrinth() = default;
          Labyrinth() = default;
-         int getCell(int row, int column); 
+         const std::vector <std::vector<int>> &getLabyrinth(); 
 };

@@ -21,6 +21,7 @@ void Labyrinth::populateLabyrinth(){
 
 }
 
-int Labyrinth::getCell(int row, int column){
-    return labyrinthMatrix[row][column];
+
+const std::vector< std::vector<int>>& Labyrinth::getLabyrinth(){
+    return labyrinthMatrix;
 }
