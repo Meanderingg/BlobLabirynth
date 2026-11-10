@@ -18,6 +18,8 @@ bool Player::canMoveTo(Game& game, glm::vec2 gridPosNew) const {
     if (this->facing == glm::vec2(0,1)) key = 's';
 
     glm::vec2 screenPos = game.gridToScreenPosition(gridPosNew);
+    //std::cout<<gridPosition.x<<" "<<gridPosition.y<<'\n';
+    //std::cout<<gridPosNew.x<<" "<<gridPosNew.y<<'\n';
 
     if(game.screenCollision(screenPos.x, screenPos.y, this->size.x, this->size.y))
         return false;

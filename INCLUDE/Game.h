@@ -37,7 +37,14 @@ private:
     GLint matrixLocation;
     glm::mat4 projection;
     GLuint programId;
+
     GLuint blobTexture = 0;
+    GLuint Hole_Up_texture = 0;
+    GLuint Hole_Left_texture = 0;
+    GLuint Hole_Both_texture = 0;
+
+    glm::vec2 cellLayout;
+    glm::vec2 cellSize;
     Labyrinth labyrinth;
 };
 
