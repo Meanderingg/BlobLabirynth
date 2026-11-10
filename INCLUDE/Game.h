@@ -8,6 +8,7 @@
 #include "glm/gtx/transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "Object.h"
+#include "Labyrinth.h"
 
 class Game {
 public:
@@ -36,6 +37,7 @@ private:
     GLuint blobTexture = 0;
     glm::vec2 cellLayout;
     glm::vec2 cellSize;
+    Labyrinth labyrinth;
 };
 
 #endif

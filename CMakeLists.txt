@@ -21,6 +21,7 @@ add_executable(labyrinth
     SRC/Game.cpp
     SRC/Player.cpp
     SRC/Mesh.cpp
+    SRC/Labyrinth.cpp
 )
 
 target_include_directories(labyrinth PRIVATE INCLUDE)
