@@ -28,6 +28,9 @@ public:
 
     constexpr static float xMin = -960.f, xMax = 960.f, yMin = -540.f, yMax = 540.f;
     std::vector<bool> keystates;
+    glm::vec2 cellLayout;
+    glm::vec2 cellSize;
+    float wallWidth = 2.f;
 private:
     Mesh mesh;
     std::vector<std::unique_ptr<Object>> objects;
