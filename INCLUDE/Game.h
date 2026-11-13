@@ -25,6 +25,7 @@ public:
     glm::vec2 gridToScreenPosition(glm::vec2 gridPosition);
     bool screenCollision(float posX, float posY, float spriteW, float spriteH);
     void decreaseScore(int amount);
+    void setBgTint(glm::vec4 tint);
     ~Game();
 
     constexpr static float xMin = -960.f, xMax = 960.f, yMin = -540.f, yMax = 540.f;
@@ -32,6 +33,7 @@ public:
     glm::vec2 cellLayout;
     glm::vec2 cellSize;
     float wallWidth = 2.f;
+    int hitFlashFrames = 0;
     int score = 500;
 private:
     void drawText(const std::string& text, int x, int y, float r, float g, float b);
@@ -39,6 +41,7 @@ private:
     Mesh mesh;
     std::vector<std::unique_ptr<Object>> objects;
     GLint matrixLocation;
+    GLint tintLocation;
     glm::mat4 projection;
     GLuint programId;
 

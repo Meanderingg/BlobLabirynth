@@ -41,6 +41,7 @@ void Game::CreateShaders() {
     this->programId = LoadShaders(ASSET_DIR "/shader.vert", ASSET_DIR "/shader.frag");
     glUseProgram(programId);
     this->matrixLocation = glGetUniformLocation(programId, "myMatrix");
+    this->tintLocation = glGetUniformLocation(programId, "tint");
 
     glUniform1i(glGetUniformLocation(programId, "myTexture"), 0);
 }
@@ -52,8 +53,6 @@ void Game::CreateObjects() {
     LoadTexture(ASSET_DIR "/assets/Hole_Left.png", Hole_Left_texture);
     LoadTexture(ASSET_DIR "/assets/No_Hole.png", Hole_Both_texture);
     LoadTexture(ASSET_DIR "/assets/Goal.png", Goal_Texture);
-
-    //float wallWidth = 2.f;
 
     // 60x60 size for each cell
     // width: 32 cells
@@ -74,24 +73,15 @@ void Game::CreateObjects() {
             }
 
             if (labyrinth.getLabyrinth()[i][j] == 0){
-                //objects.push_back(std::make_unique<Object>(glm::vec2(x, y + this->cellSize.y / 2), glm::vec2(this->cellSize.x, wallWidth), &mesh, 0));  // top
-                //objects.push_back(std::make_unique<Object>(glm::vec2(x + this->cellSize.x / 2, y), glm::vec2(wallWidth, this->cellSize.y), &mesh, 0));  // right
-                //objects.push_back(std::make_unique<Object>(glm::vec2(x, y - this->cellSize.y / 2), glm::vec2(this->cellSize.x, wallWidth), &mesh, 0));  // bottom
                 objects.push_back(std::make_unique<Object>(glm::vec2(x, y), glm::vec2(this->cellSize.x, this->cellSize.y), &mesh, Hole_Up_texture));  // left
                 }
 
             if (labyrinth.getLabyrinth()[i][j] == 1){
                 objects.push_back(std::make_unique<Object>(glm::vec2(x, y), glm::vec2(this->cellSize.x, this->cellSize.y), &mesh, Hole_Left_texture));  // top
-                //objects.push_back(std::make_unique<Object>(glm::vec2(x + this->cellSize.x / 2, y), glm::vec2(wallWidth, this->cellSize.y), &mesh, 0));  // right
-                //objects.push_back(std::make_unique<Object>(glm::vec2(x, y - this->cellSize.y / 2), glm::vec2(this->cellSize.x, wallWidth), &mesh, 0));  // bottom
-                //objects.push_back(std::make_unique<Object>(glm::vec2(x - this->cellSize.x / 2, y), glm::vec2(wallWidth, this->cellSize.y), &mesh, 0));  // left
                 }
 
             if (labyrinth.getLabyrinth()[i][j] == 2){
-                //objects.push_back(std::make_unique<Object>(glm::vec2(x, y + this->cellSize.y / 2), glm::vec2(this->cellSize.x, wallWidth), &mesh, 0));  // top
                 objects.push_back(std::make_unique<Object>(glm::vec2(x , y), glm::vec2(this->cellSize.x, this->cellSize.y), &mesh, Hole_Both_texture));  // both holes 
-                //objects.push_back(std::make_unique<Object>(glm::vec2(x, y - this->cellSize.y / 2), glm::vec2(this->cellSize.x, wallWidth), &mesh, 0));  // bottom
-                //objects.push_back(std::make_unique<Object>(glm::vec2(x - this->cellSize.x / 2, y), glm::vec2(wallWidth, this->cellSize.y), &mesh, 0));  // left
                 }
 
         }
@@ -102,6 +92,7 @@ void Game::CreateObjects() {
 }
 
 void Game::update() {
+    this->hitFlashFrames = std::max(0, this->hitFlashFrames - 1);
     for (auto& object : objects) {
         object->update(*this);
     }
@@ -109,6 +100,10 @@ void Game::update() {
 
 void Game::render() {
     glClear(GL_COLOR_BUFFER_BIT);
+
+    glm::vec4 bgTint = this->hitFlashFrames > 0 ? glm::vec4(1.f, 0.f, 0.f, 0.8f) : glm::vec4(1.f, 1.f, 1.f, 1.f);
+    this->setBgTint(bgTint);
+
     for (auto& object : objects) {
         object->render(matrixLocation, projection);
     }
@@ -161,8 +156,11 @@ bool Game::collisionDetection(float positionXA, float positionYA, float widthA, 
 }
 
 void Game::decreaseScore(int amount) {
-    // The score stops at 0; nothing else happens when it gets there
-    score = std::max(0, score - amount);
+    score -= amount;
+}
+
+void Game::setBgTint(glm::vec4 tint) {
+    glUniform4fv(this->tintLocation, 1, glm::value_ptr(tint));
 }
 
 void Game::drawText(const std::string& text, int x, int y, float r, float g, float b) {

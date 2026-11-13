@@ -18,9 +18,6 @@ bool Player::canMoveTo(Game& game, glm::vec2 gridPosNew) const {
     if (this->facing == glm::vec2(0,1)) key = 's';
 
     glm::vec2 screenPos = game.gridToScreenPosition(gridPosNew);
-    //std::cout<<gridPosition.x<<" "<<gridPosition.y<<'\n';
-    //std::cout<<gridPosNew.x<<" "<<gridPosNew.y<<'\n';
-
     if(game.screenCollision(screenPos.x, screenPos.y, this->size.x, this->size.y))
         return false;
 
@@ -49,8 +46,7 @@ bool Player::canMoveTo(Game& game, glm::vec2 gridPosNew) const {
 
 }
 
-bool hasWon(Game& game, glm::vec2 gridPosition){
-    
+bool hasWon(Game& game, glm::vec2 gridPosition) {
     return (gridPosition == game.cellLayout - glm::vec2(1, 1));
 }
 
@@ -89,8 +85,10 @@ void Player::handleMovement(Game& game) {
 
     if (game.screenCollision(newPosition.x, newPosition.y, this->size.x, this->size.y) ||
         this->collidesWithWalls(game, newPosition)) {
-        if (!this->blockedByWall)
+        if (!this->blockedByWall) {
             game.decreaseScore(10);
+            game.hitFlashFrames = 30;
+        }
         this->blockedByWall = true;
         return;
     }
